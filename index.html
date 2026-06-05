@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Good / Bad News</title>
+
+  <style>
+   * {
+  box-sizing: border-box;
+}
+
+/* your current CSS above */
+
+
+/* PEOPLE ARE TALKING ABOUT */
+
+.talking-about-section {
+  margin: 28px 0;
+}
+
+.talking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.talking-header h2 {
+  color: #ffd400;
+  margin: 0;
+}
+
+.talking-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.talking-controls button {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  color: #ffd400;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.talking-controls button:hover {
+  border-color: #ffd400;
+  transform: scale(1.08);
+}
+
+#talkingAboutContainer {
+  display: flex;
+  gap: 16px;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.talking-story-card {
+  min-width: 300px;
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease,
+              border-color 0.2s ease;
+}
+
+.talking-story-card:hover {
+  transform: translateY(-4px);
+  border-color: #ffd400;
+}
+
+.talking-story-image {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  filter: brightness(0.75);
+}
+
+.talking-story-content {
+  padding: 14px;
+}
+
+.talking-story-content h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.talking-story-content p {
+  color: #ffd400;
+  font-weight: bold;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #000;
+  border-bottom: 2px solid #ffd400;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.brand span {
+  color: #ffd400;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav button,
+.back-button {
+  background: transparent;
+  color: #ffd400;
+  border: 1px solid #ffd400;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.nav button:hover,
+.back-button:hover,
+.nav button.active {
+  background: #ffd400;
+  color: #000;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.search {
+  width: 100%;
+  padding: 15px 18px;
+  font-size: 16px;
+  background: #0a0a0a;
+  color: white;
+  border: 2px solid #ffd400;
+  border-radius: 16px;
+  outline: none;
+  margin-bottom: 26px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.panel,
+.feed-card,
+.story-view,
+.source-card {
+  background: #0a0a0a;
+  border: 2px solid #ffd400;
+  border-radius: 24px;
+}
+
+.panel {
+  padding: 22px;
+}
+
+.eyebrow {
+  color: #ffd400;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+.top-story h1,
+.story-view h1 {
+  font-size: 44px;
+  line-height: 1.05;
+  margin: 10px 0 14px;
+}
+
+.top-story p,
+.story-view p {
+  color: #d0d0d0;
+  line-height: 1.7;
+  font-size: 17px;
+}
+
+.why-box {
+  margin-top: 18px;
+  border: 1px solid rgba(255, 212, 0, 0.5);
+  border-radius: 18px;
+  padding: 16px;
+  background: #000;
+}
+
+.badge {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.good {
+  background: #173b1c;
+  color: #7df08d;
+  border: 1px solid #2e8b45;
+}
+
+.bad {
+  background: #3f1616;
+  color: #ff8f8f;
+  border: 1px solid #b54a4a;
+}
+
+.impact-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 10px;
+  width: fit-content;
+}
+
+.impact-high {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff7070;
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  box-shadow: 0 0 12px rgba(255, 80, 80, 0.12);
+}
+
+.impact-medium {
+  background: rgba(255, 210, 70, 0.15);
+  color: #ffd84d;
+  border: 1px solid rgba(255, 210, 70, 0.5);
+  box-shadow: 0 0 12px rgba(255, 210, 70, 0.12);
+}
+
+.impact-low {
+  background: rgba(180, 180, 180, 0.12);
+  color: #d4d4d4;
+  border: 1px solid rgba(180, 180, 180, 0.35);
+}
+
+.trending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.trend-card {
+  border: 1px solid rgba(255, 212, 0, 0.65);
+  border-radius: 18px;
+  padding: 16px;
+  background: #000;
+  cursor: pointer;
+}
+
+.trend-card h3 {
+  margin: 10px 0 8px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.feed {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.feed-card {
+  padding: 18px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.feed-card:hover,
+.trend-card:hover {
+  transform: translateY(-2px);
+}
+
+.feed-card h2 {
+  font-size: 24px;
+  margin: 12px 0 10px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: #949494;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.hidden {
+  display: none;
+}
+
+.story-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+  margin-top: 22px;
+}
+
+.story-view {
+  padding: 24px;
+}
+
+.source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.source-card {
+  padding: 18px;
+}
+
+.vote-box {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 212, 0, 0.45);
+  border-radius: 16px;
+  background: #050505;
+}
+
+.vote-title {
+  color: #ffd400;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.vote-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ddd;
+  font-size: 13px;
+  margin-top: 8px;
+  margin-bottom: 5px;
+}
+
+.vote-bar {
+  height: 7px;
+  background: #222;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.loading-box {
+  grid-column: 1 / -1;
+  padding: 40px;
+  text-align: center;
+  color: #ffd400;
+  font-size: 1.2rem;
+  border: 1px solid #333;
+  border-radius: 18px;
+  background: #111;
+}
+
+.vote-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.good-fill {
+  background: #63e07b;
+}
+
+.mixed-fill {
+  background: #ffd400;
+}
+
+.bad-fill {
+  background: #ff6b6b;
+}
+
+.vote-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.vote-buttons button {
+  background: #111;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.vote-buttons button:hover {
+  border-color: #ffd400;
+}
+
+.vote-buttons button.selected {
+  background: #ffd400;
+  color: #000;
+  border-color: #ffd400;
+}
+
+.story-image-wrapper,
+.top-story-image-wrapper,
+.story-page-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.story-image-wrapper::after,
+.top-story-image-wrapper::after,
+.story-page-image-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.08),
+      rgba(0,0,0,0.18),
+      rgba(0,0,0,0.45)
+    );
+  pointer-events: none;
+}
+
+.story-image,
+.top-story-image,
+.story-page-image {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.82);
+  transition: transform 0.25s ease;
+}
+
+.story-image {
+  height: 220px;
+  margin-bottom: 14px;
+}
+
+.top-story-image {
+  height: 340px;
+  margin: 14px 0 18px;
+}
+
+.story-page-image {
+  max-height: 420px;
+  margin: 18px 0;
+}
+
+@media (max-width: 900px) {
+  .grid,
+  .story-layout,
+  .feed {
+    grid-template-columns: 1fr;
+  }
+
+  .top-story h1,
+  .story-view h1 {
+    font-size: 34px;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">Good / <span>Bad</span> News</div>
+
+      <div class="nav">
+        <button onclick="showAll(this)">All</button>
+        <button onclick="filterBy('Good', this)">Good</button>
+        <button onclick="filterBy('Bad', this)">Bad</button>
+        <button onclick="filterByCategory('World', this)">World</button>
+        <button onclick="filterByCategory('Tech', this)">Tech</button>
+        <button onclick="filterByCategory('Business', this)">Business</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <section id="feed-page">
+     <div class="grid">
+  <section class="panel top-story" id="top-story-container"></section>
+
+  <aside class="panel">
+    <div class="eyebrow">Trending Now</div>
+    <div class="trending-list" id="trending-container"></div>
+  </aside>
+</div>
+
+<section class="talking-about-section">
+  <div class="talking-header">
+    <h2>🔥 People Are Talking About</h2>
+
+    <div class="talking-controls">
+      <button onclick="scrollTalking(-1)">❮</button>
+      <button onclick="scrollTalking(1)">❯</button>
+    </div>
+  </div>
+
+  <div id="talkingAboutContainer"></div>
+</section>
+
+<input
+  class="search"
+  type="text"
+  placeholder="Search hot world news..."
+  oninput="searchStories(this.value)"
+/>
+
+      <h2 class="section-title">Feed</h2>
+      <div class="feed" id="feed-container"></div>
+    </section>
+
+    <section id="story-page" class="hidden">
+      <button class="back-button" onclick="closeStory()">← Back to feed</button>
+
+      <div class="story-layout">
+       <article class="story-view">
+       <div id="story-badge"></div>
+       <div id="story-vote-box"></div>
+       <h1 id="story-title"></h1>
+
+       <div id="story-image"></div>
+
+       <p id="story-summary"></p>
+
+       <div class="why-box">
+       <div class="eyebrow">Why it matters</div>
+       <p id="story-why"></p>
+       </div>
+
+       <div class="why-box">
+  <div class="eyebrow">Story details</div>
+  <p id="story-meta"></p>
+</div>
+
+<div class="comments-box">
+
+  <div class="comments-header">
+    <div class="eyebrow" id="comments-title">
+      Community Comments (0)
+    </div>
+  </div>
+
+  <input
+    type="text"
+    id="comment-name"
+    placeholder="Your name"
+  />
+
+  <textarea
+    id="comment-input"
+    placeholder="What do you think about this story?"
+  ></textarea>
+
+  <button type="button" onclick="addComment(event)">
+    Post Comment
+  </button>
+
+  <div id="comments-list"></div>
+</div>
+
+</article>
+
+        <aside>
+          <h2 class="section-title">Sources covering this story</h2>
+          <div id="source-list" class="source-list"></div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script src="rawArticles.js"></script>
+  <script src="stories.js"></script>
+  <script src="fetchNews.js"></script>
+<script>
+  function scoreStory(story) {
+    const sourceScore = story.sources.length * 10;
+
+    let timeScore = 0;
+
+    if (story.time.includes("minutes")) {
+      timeScore = 30;
+    } else if (story.time.includes("hour")) {
+      timeScore = 20;
+    } else if (story.time.includes("day")) {
+      timeScore = 5;
+    } else {
+      timeScore = 10;
+    }
+
+    return sourceScore + timeScore;
+  }
+
+  function getImpactLabel(score) {
+    if (score >= 60) return "High Impact";
+    if (score >= 35) return "Medium Impact";
+    return "Low Impact";
+  }
+
+  function getImpactClass(score) {
+    if (score >= 60) return "impact-high";
+    if (score >= 35) return "impact-medium";
+    return "impact-low";
+  }
+
+  function getGrowthLabel(story) {
+  const impactScore = scoreStory(story);
+  const sourceCount = story.sources.length;
+  const timeText = story.time.toLowerCase();
+
+  const isRecent =
+    timeText.includes("minute") ||
+    timeText.includes("hour") ||
+    timeText.includes("just now");
+
+  if (sourceCount >= 7 || (impactScore >= 60 && isRecent)) {
+    return "🔥 Rapidly Developing";
+  }
+
+  if (sourceCount >= 4 || impactScore >= 35) {
+    return "⚡ Trending Fast";
+  }
+
+  if (isRecent) {
+    return "Developing";
+  }
+
+  return "Watching";
+}
+
+  function getStoryList() {
+    return window.allStories || [];
+  }
+
+ function renderTopStory(list = getStoryList()) {
+  const container = document.getElementById("top-story-container");
+  if (!container) return;
+
+  if (!list || list.length === 0) {
+    container.innerHTML =
+      "<p style='color:white;'>No top story available.</p>";
+    return;
+  }
+
+  const sorted = [...list].sort(
+    (a, b) => scoreStory(b) - scoreStory(a)
+  );
+
+  const topStory = sorted[0];
+
+  const impactScore = scoreStory(topStory);
+  const impactLabel = getImpactLabel(impactScore);
+  const impactClass = getImpactClass(impactScore);
+
+  container.innerHTML = `
+    <div class="eyebrow">Top Story</div>
+
+    ${
+      topStory.image
+        ? `
+        <div class="top-story-image-wrapper">
+          <img
+            class="top-story-image"
+            src="${topStory.image}"
+            alt="${topStory.title}"
+          />
+        </div>
+        `
+        : ""
+    }
+
+    ${renderVoteBox(topStory)}
+
+    <h1>${topStory.title}</h1>
+    <p>${topStory.summary}</p>
+
+    <div class="why-box">
+      <div class="eyebrow">Why it matters</div>
+      <p>${topStory.why}</p>
+    </div>
+
+    <div class="impact-badge ${impactClass}">
+      ${impactScore >= 60 ? "🔥" : impactScore >= 35 ? "⚡" : "•"}
+      ${impactLabel} (${impactScore})
+    </div>
+
+    <div class="meta" style="margin-top:18px;">
+      <span>${getGrowthLabel(topStory)}</span>
+      <span>${topStory.sources.length} sources covering this</span>
+      <span>${topStory.category}</span>
+      <span>${topStory.time}</span>
+    </div>
+  `;
+
+  container.onclick = function () {
+    openStory(topStory);
+  };
+}
+
+function renderTalkingAbout(stories) {
+  const container = document.getElementById("talkingAboutContainer");
+  if (!container) return;
+
+  const rankedStories = [...stories]
+    .map(story => {
+      const votes = getVotes(story);
+
+      const totalVotes =
+        votes.good +
+        votes.mixed +
+        votes.bad;
+
+      return {
+        ...story,
+        totalVotes
+      };
+    })
+    .sort((a, b) => b.totalVotes - a.totalVotes)
+    .slice(0, 5);
+
+  container.innerHTML = rankedStories
+    .map(story => `
+      <div class="talking-story-card"
+          onclick="openStoryById('${getStoryId(story)}')"
+        ${
+          story.image
+            ? `<img src="${story.image}"
+                   alt="${story.title}"
+                   class="talking-story-image">`
+            : ""
+        }
+
+        <div class="talking-story-content">
+          <h3>${story.title}</h3>
+          <p>${story.totalVotes} community votes</p>
+        </div>
+      </div>
+    `)
+    .join("");
+}
+
+  function renderTrending(list = getStoryList()) {
+    const container = document.getElementById("trending-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      container.innerHTML = "<p style='color:white;'>No trending stories available.</p>";
+      return;
+    }
+
+    const sorted = [...list]
+      .sort((a, b) => scoreStory(b) - scoreStory(a))
+      .slice(1, 4);
+
+    sorted.forEach((story) => {
+      const growthLabel = getGrowthLabel(story);
+      const card = document.createElement("div");
+      card.className = "trend-card";
+
+      card.addEventListener("click", function () {
+        openStory(story);
+      });
+
+      card.innerHTML = `
+        <div class="badge ${story.label === "Good" ? "good" : "bad"}">${story.label}</div>
+        <h3>${story.title}</h3>
+        <small>${growthLabel} • ${story.sources.length} sources</small>
+      `;
+
+      container.appendChild(card);
+    });
+  }
+
+  function renderFeed(list = getStoryList()) {
+    const container = document.getElementById("feed-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!list || list.length === 0) {
+      container.innerHTML = "<p style='color:white;'>No stories available.</p>";
+      return;
+    }
+
+    const sorted = [...list].sort((a, b) => scoreStory(b) - scoreStory(a));
+
+    sorted.forEach((story) => {
+      const impactScore = scoreStory(story);
+      const impactLabel = getImpactLabel(impactScore);
+      const impactClass = getImpactClass(impactScore);
+      const impactIcon = impactScore >= 60 ? "🔥" : impactScore >= 35 ? "⚡" : "•";
+      const growthLabel = getGrowthLabel(story);
+      const card = document.createElement("article");
+      card.className = "feed-card";
+
+      card.addEventListener("click", function () {
+        openStory(story);
+      });
+
+     card.innerHTML = `
+  ${
+   story.image
+  ? `
+  <div class="story-image-wrapper">
+    <img class="story-image" src="${story.image}" alt="${story.title}" />
+  </div>
+  `
+      : ""
+  }
+
+  ${renderVoteBox(story)}
+
+  <h2>${story.title}</h2>
+  <p>${story.summary}</p>
+
+  <div class="why-box">
+    <div class="eyebrow">Why</div>
+    <p>${story.why}</p>
+  </div>
+
+  <div class="why-box">
+    <div class="eyebrow">Impact</div>
+    <div class="impact-badge ${impactClass}">
+      ${impactLabel} (${impactScore})
+    </div>
+  </div>
+
+  <div class="meta">
+    <span>${growthLabel}</span>
+    <span>${story.sources.length} sources</span>
+    <span>${story.category}</span>
+    <span>${story.time}</span>
+  </div>
+
+  <div class="compare">Compare coverage →</div>
+`;
+
+      container.appendChild(card);
+    });
+  }
+
+function openStory(story) {
+  if (!story) return;
+
+  currentOpenStoryId = getStoryId(story);
+
+  const impactScore = scoreStory(story);
+  const impactLabel = getImpactLabel(impactScore);
+  const impactClass = getImpactClass(impactScore);
+  const impactIcon = impactScore >= 60 ? "🔥" : impactScore >= 35 ? "⚡" : "•";
+  const growthLabel = getGrowthLabel(story);
+
+  const groundNewsSearchUrl =
+    "https://ground.news/search?q=" + encodeURIComponent(story.title);
+
+  document.getElementById("story-badge").innerHTML = "";
+  document.getElementById("story-vote-box").innerHTML = renderVoteBox(story);
+
+  document.getElementById("story-title").textContent = story.title;
+  document.getElementById("story-image").innerHTML =
+  story.image
+    ? `<img class="story-page-image" src="${story.image}" alt="${story.title}" />`
+    : "";
+  document.getElementById("story-why").textContent = story.why;
+
+  document.getElementById("story-meta").innerHTML =
+    `${growthLabel} • ${story.sources.length} sources • ${story.category} • ${story.time} • <span class="impact-badge ${impactClass}">${impactIcon} ${impactLabel} (${impactScore})</span>
+    <br><br>
+    <a href="${groundNewsSearchUrl}" target="_blank" style="color:#ffd400; text-decoration:none; font-weight:800;">
+      Compare on Ground News →
+    </a>`;
+
+  const sourceList = document.getElementById("source-list");
+  sourceList.innerHTML = "";
+
+  story.sources.forEach((source) => {
+    const div = document.createElement("div");
+    div.className = "source-card";
+
+    div.innerHTML = `
+      <h3>${source.name}</h3>
+      <p>${source.headline}</p>
+
+      <div class="source-meta">
+        <a href="${source.url}" target="_blank" style="color:#ffd400; text-decoration:none;">
+          Read from source →
+        </a>
+      </div>
+    `;
+
+    sourceList.appendChild(div);
+  });
+
+  renderComments(currentOpenStoryId);
+  
+  document.getElementById("feed-page").classList.add("hidden");
+  document.getElementById("story-page").classList.remove("hidden");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+  function closeStory() {
+    document.getElementById("story-page").classList.add("hidden");
+    document.getElementById("feed-page").classList.remove("hidden");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  function searchStories(query) {
+    const q = query.toLowerCase().trim();
+    const allStories = getStoryList();
+
+    if (!q) {
+ renderTopStory(window.allStories);
+ renderTrending(window.allStories);
+ renderTalkingAbout(window.allStories);
+ renderFeed(window.allStories);
+      return;
+    }
+
+    const filtered = allStories.filter((story) =>
+      story.title.toLowerCase().includes(q) ||
+      story.summary.toLowerCase().includes(q) ||
+      story.category.toLowerCase().includes(q) ||
+      story.label.toLowerCase().includes(q)
+    );
+
+    renderTopStory(filtered);
+    renderTrending(filtered);
+    renderFeed(filtered);
+  }
+
+  function setActive(button) {
+    document.querySelectorAll(".nav button").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    if (button) {
+      button.classList.add("active");
+    }
+  }
+
+  function filterBy(label, btn) {
+    setActive(btn);
+
+    const filtered = getStoryList().filter(
+      (story) => story.label === label
+    );
+
+    renderTopStory(filtered);
+    renderTrending(filtered);
+    renderFeed(filtered);
+  }
+
+  function filterByCategory(category, btn) {
+    setActive(btn);
+
+    const filtered = getStoryList().filter(
+      (story) => story.category === category
+    );
+
+    renderTopStory(filtered);
+    renderTrending(filtered);
+    renderFeed(filtered);
+  }
+
+  function showAll(btn) {
+    setActive(btn);
+
+    const allStories = getStoryList();
+
+    renderTopStory(window.allStories);
+    renderTrending(window.allStories);
+    renderTalkingAbout(window.allStories);
+    renderFeed(window.allStories);
+  }
+
+function showLoadingState() {
+  const topStory = document.getElementById("top-story-container");
+  const trending = document.getElementById("trending-container");
+  const talking = document.getElementById("talkingAboutContainer");
+  const feed = document.getElementById("feed-container");
+
+  if (topStory) {
+    topStory.innerHTML = `
+      <div class="eyebrow">Top Story</div>
+      <p style="color:#ffd400;">Loading real stories...</p>
+    `;
+  }
+
+  if (trending) {
+    trending.innerHTML = `<p style="color:#ffd400;">Loading trending stories...</p>`;
+  }
+
+  if (talking) {
+    talking.innerHTML = `<div class="loading-box">Loading community stories...</div>`;
+  }
+
+  if (feed) {
+    feed.innerHTML = `<div class="loading-box">Loading real news stories...</div>`;
+  }
+}
+
+ document.addEventListener("DOMContentLoaded", function () {
+  showLoadingState();
+
+  const firstButton = document.querySelector(".nav button");
+
+  if (firstButton) {
+    firstButton.classList.add("active");
+  }
+});
+</script>
+</body>
+</html>

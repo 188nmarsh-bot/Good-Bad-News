@@ -1,0 +1,2 @@
+window.rawArticles = [];
+window.allStories = [];

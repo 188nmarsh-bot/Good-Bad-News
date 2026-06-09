@@ -11,7 +11,7 @@ async function loadRealNews() {
         time: article.pubDate || "",
         url: article.link || article.url || "",
         image: "",
-        keywords: extractKeywords(article.title || ""),
+        keywords: (article.title || "").toLowerCase().split(" ").slice(0, 5),
         summary: article.summary || ""
       };
     });

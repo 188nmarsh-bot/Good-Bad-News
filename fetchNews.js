@@ -8,7 +8,7 @@ async function loadRealNews() {
         title: article.title || "",
         source: article.source || "",
         category: article.category || "World",
-        time: formatRelativeTime(article.pubDate),
+        time: article.pubDate || "",
         url: article.link || article.url || "",
         image: "",
         keywords: extractKeywords(article.title || ""),

@@ -1,10 +1,21 @@
 export async function onRequest() {
   const feeds = [
-    { name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
-    { name: "NPR", url: "https://feeds.npr.org/1001/rss.xml" },
-    { name: "CBS News", url: "https://www.cbsnews.com/latest/rss/main" },
-    { name: "The Guardian", url: "https://www.theguardian.com/world/rss" }
-  ];
+  { name: "Google News Top Stories", url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en" },
+  { name: "Google News World", url: "https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en" },
+  { name: "Google News U.S.", url: "https://news.google.com/rss/headlines/section/topic/NATION?hl=en-US&gl=US&ceid=US:en" },
+  { name: "Google News Business", url: "https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en" },
+  { name: "Google News Tech", url: "https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en" },
+
+  { name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
+  { name: "NPR", url: "https://feeds.npr.org/1001/rss.xml" },
+  { name: "CBS News", url: "https://www.cbsnews.com/latest/rss/main" },
+  { name: "The Guardian", url: "https://www.theguardian.com/world/rss" },
+  { name: "CNN World", url: "https://rss.cnn.com/rss/edition_world.rss" },
+  { name: "Fox News", url: "https://moxie.foxnews.com/google-publisher/latest.xml" },
+  { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
+  { name: "Reuters", url: "https://feeds.reuters.com/reuters/worldNews" },
+  { name: "AP News", url: "https://apnews.com/hub/ap-top-news?output=rss" }
+];
 
   const results = await Promise.allSettled(
     feeds.map(feed => fetchRSS(feed))
@@ -13,7 +24,7 @@ export async function onRequest() {
   const articles = results
     .filter(result => result.status === "fulfilled")
     .flatMap(result => result.value)
-    .slice(0, 40);
+    .slice(0, 80);
 
   return new Response(JSON.stringify(articles), {
     headers: {

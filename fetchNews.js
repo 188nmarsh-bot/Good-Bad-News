@@ -1,3 +1,30 @@
+async function fetchRSS(feed) {
+  const proxy = "https://api.codetabs.com/v1/proxy?quest=";
+
+  const response = await fetch(proxy + encodeURIComponent(feed.url));
+  const text = await response.text();
+
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(text, "text/xml");
+  const items = xml.querySelectorAll("item");
+
+  return Array.from(items).slice(0, 8).map(item => {
+    const title = item.querySelector("title")?.textContent || "";
+    const link = item.querySelector("link")?.textContent || "";
+    const pubDate = item.querySelector("pubDate")?.textContent || "";
+
+    return {
+      title,
+      source: feed.name,
+      category: guessCategory(title),
+      time: formatRelativeTime(pubDate),
+      url: link,
+      image: "",
+      keywords: extractKeywords(title)
+    };
+  });
+}
+
 async function loadRealNews() {
   const feeds = [
   { name: "Google News Top Stories", url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en" },
@@ -68,3 +95,6 @@ async function loadRealNews() {
     renderFeed([]);
   }
 }
+document.addEventListener("DOMContentLoaded", loadRealNews);
+
+

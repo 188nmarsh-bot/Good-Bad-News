@@ -10,7 +10,7 @@ async function loadRealNews() {
         category: article.category || "World",
         time: article.pubDate || "",
         url: article.link || article.url || "",
-        image: "",
+        image: article.image || article.thumbnail || article.media || "",
         keywords: (article.title || "").toLowerCase().split(" ").slice(0, 5),
         summary: article.summary || ""
       };

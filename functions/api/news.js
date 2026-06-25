@@ -146,6 +146,7 @@ async function getImageFromArticle(url) {
 function cleanImageUrl(url = "") {
   return String(url)
     .replace(/&amp;/g, "&")
+    .replace("/standard/240/", "/standard/1024/")
     .trim();
 }
 

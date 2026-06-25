@@ -36,9 +36,11 @@ export async function onRequest() {
 
 async function fetchRSS(feed) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4000);
+  const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
+    console.log("Fetching:", feed.name, feed.url);
+
     const response = await fetch(feed.url, {
       signal: controller.signal,
       headers: {
@@ -46,27 +48,35 @@ async function fetchRSS(feed) {
       }
     });
 
+    if (!response.ok) {
+      console.log("FAILED:", feed.name, response.status, response.statusText);
+      return [];
+    }
+
     const text = await response.text();
 
-    const items = [...text.matchAll(/<item>[\s\S]*?<\/item>/g)].slice(0, 10);
+    const items = [...text.matchAll(/<item>[\s\S]*?<\/item>/g)].slice(0, 15);
+
+    console.log("SUCCESS:", feed.name, "items:", items.length);
 
     return items.map(match => {
       const item = match[0];
 
-    const title = clean(getTag(item, "title"));
-    const description = getTag(item, "description");
+      const title = clean(getTag(item, "title"));
+      const description = getTag(item, "description");
 
-    return {
-     title,
-     link: clean(getTag(item, "link")),
-     pubDate: clean(getTag(item, "pubDate")),
-      source: feed.name,
-      category: guessCategory(title),
-      summary: clean(description),
-      image: getImage(item, description)
-};
+      return {
+        title,
+        link: clean(getTag(item, "link")),
+        pubDate: clean(getTag(item, "pubDate")),
+        source: feed.name,
+        category: guessCategory(title),
+        summary: clean(description),
+        image: getImage(item, description)
+      };
     });
   } catch (error) {
+    console.log("ERROR:", feed.name, error.message);
     return [];
   } finally {
     clearTimeout(timeout);

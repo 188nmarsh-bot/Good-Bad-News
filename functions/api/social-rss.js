@@ -19,7 +19,8 @@ export async function onRequest() {
   const summary = safeCdata(cleanSocialText(article.summary || article.title));
   const guid = escapeXml(article.link || `${siteUrl}/#${article.title}`);
   const pubDate = article.pubDate || new Date().toUTCString();
-  const imageUrl = upgradeSocialImage(article.image || "");
+  const rawImage = upgradeSocialImage(article.image || "");
+const imageUrl = `${siteUrl}/api/social-image?title=${encodeURIComponent(article.title)}&img=${encodeURIComponent(rawImage)}`;
 
     return `
   <item>

@@ -6,7 +6,7 @@ export async function onRequest() {
   const articles = await response.json();
 
     const topArticles = articles
-  .filter(article => article.title)
+  .filter(article => article.title && article.image)
   .map(article => ({
     ...article,
     socialScore: scoreArticle(article)

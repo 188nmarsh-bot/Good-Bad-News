@@ -87,18 +87,31 @@ function getImage(item, description = "") {
   description = description || "";
 
   const mediaMatch = item.match(/<media:content[^>]*url=["']([^"']+)["']/i);
-  if (mediaMatch) return mediaMatch[1];
+  if (mediaMatch) return cleanImageUrl(mediaMatch[1]);
 
   const enclosureMatch = item.match(/<enclosure[^>]*url=["']([^"']+)["']/i);
-  if (enclosureMatch) return enclosureMatch[1];
+  if (enclosureMatch) return cleanImageUrl(enclosureMatch[1]);
 
   const thumbnailMatch = item.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
-  if (thumbnailMatch) return thumbnailMatch[1];
+  if (thumbnailMatch) return cleanImageUrl(thumbnailMatch[1]);
 
-  const imgMatch = description.match(/<img[^>]*src=["']([^"']+)["']/i);
-  if (imgMatch) return imgMatch[1];
+  const decodedDescription = description
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
+
+  const imgMatch = decodedDescription.match(/<img[^>]*src=["']([^"']+)["']/i);
+  if (imgMatch) return cleanImageUrl(imgMatch[1]);
 
   return "";
+}
+
+function cleanImageUrl(url = "") {
+  return String(url)
+    .replace(/&amp;/g, "&")
+    .trim();
 }
 
 function getTag(xml, tag) {

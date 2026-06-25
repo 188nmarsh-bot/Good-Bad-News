@@ -15,26 +15,28 @@ export async function onRequest() {
   .slice(0, 3);
 
   const items = topArticles.map(article => {
-    const title = safeCdata(cleanSocialText(article.title));
-    const summary = safeCdata(cleanSocialText(article.summary || article.title));
-    const guid = escapeXml(article.link || `${siteUrl}/#${article.title}`);
-    const pubDate = article.pubDate || new Date().toUTCString();
+  const title = safeCdata(cleanSocialText(article.title));
+  const summary = safeCdata(cleanSocialText(article.summary || article.title));
+  const guid = escapeXml(article.link || `${siteUrl}/#${article.title}`);
+  const pubDate = article.pubDate || new Date().toUTCString();
+  const imageUrl = article.image || "";
 
     return `
-      <item>
-        <title><![CDATA[${title}]]></title>
-        <link>${siteUrl}</link>
-        <guid>${guid}</guid>
-        <description><![CDATA[${summary}
+  <item>
+    <title><![CDATA[${title}]]></title>
+    <link>${siteUrl}</link>
+    <guid>${guid}</guid>
+    <description><![CDATA[${summary}
 
 Read more at ${siteUrl}]]></description>
-        <pubDate>${escapeXml(pubDate)}</pubDate>
-      </item>
-    `;
+    <pubDate>${escapeXml(pubDate)}</pubDate>
+    ${imageUrl ? `<media:content url="${escapeXml(imageUrl)}" medium="image" />` : ""}
+  </item>
+`;
   }).join("");
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>Good Bad News Social Feed</title>
     <link>${siteUrl}</link>

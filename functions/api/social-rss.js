@@ -24,19 +24,22 @@ const topArticles = articles
   const imageUrl =
   `${siteUrl}/api/social-image?title=${encodeURIComponent(title)}&img=${encodeURIComponent(upgradeSocialImage(article.image || ""))}`;
 
-  return `
-    <item>
-      <title><![CDATA[${safeCdata(title)}]]></title>
-      <link>${siteUrl}</link>
-      <guid isPermaLink="false">${guid}</guid>
-      <pubDate>${pubDate}</pubDate>
-      <description><![CDATA[${safeCdata(summary)}
+ return `
+  <item>
+    <title><![CDATA[${safeCdata(title)}]]></title>
+    <link>${siteUrl}</link>
+    <guid isPermaLink="false">${guid}</guid>
+    <pubDate>${pubDate}</pubDate>
+    <description><![CDATA[${safeCdata(summary)}
 
 Vote now: Good • Mixed • Bad
-${siteUrl}]]></description>
-      <media:content url="${escapeXml(imageUrl)}" medium="image" />
-    </item>
-  `;
+${siteUrl}
+
+IMAGE:
+${imageUrl}]]></description>
+    <media:content url="${escapeXml(imageUrl)}" medium="image" />
+  </item>
+`;
 }).join("");
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>

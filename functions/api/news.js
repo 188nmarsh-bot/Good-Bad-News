@@ -54,27 +54,34 @@ async function fetchRSS(feed) {
     }
 
     const text = await response.text();
-
     const items = [...text.matchAll(/<item>[\s\S]*?<\/item>/g)].slice(0, 15);
 
     console.log("SUCCESS:", feed.name, "items:", items.length);
 
-    return items.map(match => {
-      const item = match[0];
+    return await Promise.all(
+      items.map(async (match) => {
+        const item = match[0];
 
-      const title = clean(getTag(item, "title"));
-      const description = getTag(item, "description");
+        const title = clean(getTag(item, "title"));
+        const description = getTag(item, "description");
+        const link = clean(getTag(item, "link"));
 
-      return {
-        title,
-        link: clean(getTag(item, "link")),
-        pubDate: clean(getTag(item, "pubDate")),
-        source: feed.name,
-        category: guessCategory(title),
-        summary: clean(description),
-        image: getImage(item, description)
-      };
-    });
+        let image = getImage(item, description);
+
+         if (!image && link && !feed.name.includes("Google News")) {
+          image = await getImageFromArticle(link);
+         }
+        return {
+          title,
+          link,
+          pubDate: clean(getTag(item, "pubDate")),
+          source: feed.name,
+          category: guessCategory(title),
+          summary: clean(description),
+          image
+        };
+      })
+    );
   } catch (error) {
     console.log("ERROR:", feed.name, error.message);
     return [];
@@ -106,6 +113,34 @@ function getImage(item, description = "") {
   if (imgMatch) return cleanImageUrl(imgMatch[1]);
 
   return "";
+}
+
+async function getImageFromArticle(url) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "GoodBadNews/1.0"
+      }
+    });
+
+    if (!response.ok) return "";
+
+    const html = await response.text();
+
+    const ogMatch = html.match(
+      /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i
+    );
+    if (ogMatch) return cleanImageUrl(ogMatch[1]);
+
+    const twitterMatch = html.match(
+      /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i
+    );
+    if (twitterMatch) return cleanImageUrl(twitterMatch[1]);
+
+    return "";
+  } catch (error) {
+    return "";
+  }
 }
 
 function cleanImageUrl(url = "") {

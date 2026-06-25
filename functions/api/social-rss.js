@@ -19,7 +19,7 @@ export async function onRequest() {
   const summary = safeCdata(cleanSocialText(article.summary || article.title));
   const guid = escapeXml(article.link || `${siteUrl}/#${article.title}`);
   const pubDate = article.pubDate || new Date().toUTCString();
-  const imageUrl = article.image || "";
+  const imageUrl = upgradeSocialImage(article.image || "");
 
     return `
   <item>
@@ -163,4 +163,11 @@ function scoreArticle(article) {
   });
 
   return score;
+}
+
+function upgradeSocialImage(url = "") {
+  return String(url)
+    .replace(/&amp;/g, "&")
+    .replace("/standard/240/", "/standard/1024/")
+    .trim();
 }

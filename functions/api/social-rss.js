@@ -5,53 +5,16 @@ export async function onRequest() {
   const response = await fetch(newsUrl);
   const articles = await response.json();
 
-    const topArticles = articles
-  .filter(article => article.title && article.image)
-  .map(article => ({
-    ...article,
-    socialScore: scoreArticle(article)
-  }))
-  .sort((a, b) => b.socialScore - a.socialScore)
-  .slice(0, 3);
+  const testArticle = {
+  title: "TEST POST - Good Bad News Instagram check",
+  summary: "This is a temporary test post to verify the branded Instagram image and caption formatting.",
+  link: `${siteUrl}/test-post-${Date.now()}`,
+  pubDate: new Date().toUTCString(),
+  source: "Good Bad News",
+  image: "https://ichef.bbci.co.uk/ace/standard/1024/cpsprodpb/e1c3/live/249bb360-6fba-11f1-8546-8f19e4fe30f4.jpg"
+};
 
-  const items = topArticles.map(article => {
-  const title = safeCdata(cleanSocialText(article.title));
-  const summary = safeCdata(cleanSocialText(article.summary || article.title));
-  const guid = escapeXml(article.link || `${siteUrl}/#${article.title}`);
-  const pubDate = article.pubDate || new Date().toUTCString();
-  const rawImage = upgradeSocialImage(article.image || "");
-const imageUrl = `${siteUrl}/api/social-image?title=${encodeURIComponent(article.title)}&img=${encodeURIComponent(rawImage)}`;
-
-    return `
-  <item>
-    <title><![CDATA[${title}]]></title>
-    <link>${siteUrl}</link>
-    <guid>${guid}</guid>
-    <description><![CDATA[${summary}
-
-Read more at ${siteUrl}]]></description>
-    <pubDate>${escapeXml(pubDate)}</pubDate>
-    ${imageUrl ? `<media:content url="${escapeXml(imageUrl)}" medium="image" />` : ""}
-  </item>
-`;
-  }).join("");
-
-  const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
-  <channel>
-    <title>Good Bad News Social Feed</title>
-    <link>${siteUrl}</link>
-    <description>Top stories from Good Bad News</description>
-    ${items}
-  </channel>
-</rss>`;
-
-  return new Response(rss, {
-    headers: {
-      "Content-Type": "application/rss+xml; charset=UTF-8",
-      "Cache-Control": "public, max-age=300"
-    }
-  });
+   const topArticles = [testArticle];
 }
 
 function escapeXml(text = "") {

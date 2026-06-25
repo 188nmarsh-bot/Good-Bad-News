@@ -22,7 +22,7 @@ const topArticles = articles
   const pubDate = article.pubDate;
 
   const imageUrl =
-    `${siteUrl}/api/social-image?title=${encodeURIComponent(title)}&img=${encodeURIComponent(upgradeSocialImage(article.image || ""))}`;
+  `${siteUrl}/api/social-image?title=${encodeURIComponent(title)}&img=${encodeURIComponent(upgradeSocialImage(article.image || ""))}`;
 
   return `
     <item>

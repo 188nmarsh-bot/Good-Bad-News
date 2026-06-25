@@ -967,30 +967,44 @@ function openStory(story) {
     });
   }
 
-  function searchStories(query) {
-    const q = query.toLowerCase().trim();
-    const allStories = getStoryList();
+ function searchStories(query) {
+  const q = query.toLowerCase().trim();
+  const allStories = getStoryList();
 
-    if (!q) {
- renderTopStory(window.allStories);
- renderTrending(window.allStories);
- renderTalkingAbout(window.allStories);
- renderFeed(window.allStories);
-      return;
-    }
-
-    const filtered = allStories.filter((story) =>
-      story.title.toLowerCase().includes(q) ||
-      story.summary.toLowerCase().includes(q) ||
-      story.category.toLowerCase().includes(q) ||
-      story.label.toLowerCase().includes(q)
-    );
-
-    renderTopStory(filtered);
-    renderTrending(filtered);
-    renderFeed(filtered);
+  if (!q) {
+    renderTopStory(window.allStories);
+    renderTrending(window.allStories);
+    renderTalkingAbout(window.allStories);
+    renderFeed(window.allStories);
+    return;
   }
 
+  const filtered = allStories.filter((story) => {
+    const title = (story.title || "").toLowerCase();
+    const summary = (story.summary || "").toLowerCase();
+    const category = (story.category || "").toLowerCase();
+    const label = (story.label || "").toLowerCase();
+
+    const sourceText = (story.sources || [])
+      .map(source =>
+        `${source.name || ""} ${source.headline || ""}`.toLowerCase()
+      )
+      .join(" ");
+
+    return (
+      title.includes(q) ||
+      summary.includes(q) ||
+      category.includes(q) ||
+      label.includes(q) ||
+      sourceText.includes(q)
+    );
+  });
+
+  renderTopStory(filtered);
+  renderTrending(filtered);
+  renderTalkingAbout(filtered);
+  renderFeed(filtered);
+}
   function setActive(button) {
     document.querySelectorAll(".nav button").forEach(btn => {
       btn.classList.remove("active");

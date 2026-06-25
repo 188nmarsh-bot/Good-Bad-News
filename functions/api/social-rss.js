@@ -1,16 +1,19 @@
 export async function onRequest() {
   const siteUrl = "https://thegoodbadnews.com";
 
-  const testArticle = {
-    title: "TEST POST - Good Bad News Instagram check",
-    summary: "This is a temporary test post to verify the branded Instagram image and caption formatting.",
-    link: `${siteUrl}/test-post-${Date.now()}`,
-    pubDate: new Date().toUTCString(),
-    source: "Good Bad News",
-    image: "https://ichef.bbci.co.uk/ace/standard/1024/cpsprodpb/e1c3/live/249bb360-6fba-11f1-8546-8f19e4fe30f4.jpg"
-  };
+ const newsUrl = `${siteUrl}/api/news`;
 
-  const topArticles = [testArticle];
+const response = await fetch(newsUrl);
+const articles = await response.json();
+
+const topArticles = articles
+  .filter(article => article.title && article.image)
+  .map(article => ({
+    ...article,
+    socialScore: scoreArticle(article)
+  }))
+  .sort((a, b) => b.socialScore - a.socialScore)
+  .slice(0, 3);
 
   const items = topArticles.map(article => {
   const title = cleanSocialText(article.title);

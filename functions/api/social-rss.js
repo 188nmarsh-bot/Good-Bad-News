@@ -5,9 +5,9 @@ export async function onRequest() {
   const response = await fetch(newsUrl);
   const articles = await response.json();
 
-  const topArticles = articles
+    const topArticles = articles
     .filter(article => article.title)
-    .slice(0, 10);
+    .slice(0, 1);
 
   const items = topArticles.map(article => {
     const title = safeCdata(cleanSocialText(article.title));

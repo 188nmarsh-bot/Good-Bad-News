@@ -53,14 +53,18 @@ async function fetchRSS(feed) {
     return items.map(match => {
       const item = match[0];
 
-      return {
-        title: clean(getTag(item, "title")),
-        link: clean(getTag(item, "link")),
-        pubDate: clean(getTag(item, "pubDate")),
-        source: feed.name,
-        category: guessCategory(clean(getTag(item, "title"))),
-        summary: clean(getTag(item, "description"))
-      };
+    const title = clean(getTag(item, "title"));
+    const description = getTag(item, "description");
+
+    return {
+     title,
+     link: clean(getTag(item, "link")),
+     pubDate: clean(getTag(item, "pubDate")),
+      source: feed.name,
+      category: guessCategory(title),
+      summary: clean(description),
+      image: getImage(item, description)
+};
     });
   } catch (error) {
     return [];
@@ -69,13 +73,31 @@ async function fetchRSS(feed) {
   }
 }
 
+function getImage(item, description = "") {
+  description = description || "";
+
+  const mediaMatch = item.match(/<media:content[^>]*url=["']([^"']+)["']/i);
+  if (mediaMatch) return mediaMatch[1];
+
+  const enclosureMatch = item.match(/<enclosure[^>]*url=["']([^"']+)["']/i);
+  if (enclosureMatch) return enclosureMatch[1];
+
+  const thumbnailMatch = item.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
+  if (thumbnailMatch) return thumbnailMatch[1];
+
+  const imgMatch = description.match(/<img[^>]*src=["']([^"']+)["']/i);
+  if (imgMatch) return imgMatch[1];
+
+  return "";
+}
+
 function getTag(xml, tag) {
   const match = xml.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`));
   return match ? match[1] : "";
 }
 
-function clean(text) {
-  return text
+function clean(text = "") {
+  return String(text)
     .replace(/<!\[CDATA\[/g, "")
     .replace(/\]\]>/g, "")
     .replace(/<[^>]*>/g, "")

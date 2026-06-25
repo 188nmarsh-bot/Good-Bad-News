@@ -3,9 +3,9 @@ export async function onRequest() {
   const newsUrl = `${siteUrl}/api/news`;
 
   const response = await fetch(newsUrl);
-  const articles = await response.json();
+const articles = await response.json();
 
-  const testArticle = {
+const testArticle = {
   title: "TEST POST - Good Bad News Instagram check",
   summary: "This is a temporary test post to verify the branded Instagram image and caption formatting.",
   link: `${siteUrl}/test-post-${Date.now()}`,
@@ -14,7 +14,8 @@ export async function onRequest() {
   image: "https://ichef.bbci.co.uk/ace/standard/1024/cpsprodpb/e1c3/live/249bb360-6fba-11f1-8546-8f19e4fe30f4.jpg"
 };
 
-   const topArticles = [testArticle];
+const topArticles = [testArticle];
+
 }
 
 function escapeXml(text = "") {

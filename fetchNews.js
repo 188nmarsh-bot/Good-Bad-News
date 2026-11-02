@@ -1,6 +1,12 @@
+
 async function loadRealNews() {
   try {
     const response = await fetch("/api/news");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch news");
+    }
+
     const articlesFromApi = await response.json();
 
     const allArticles = articlesFromApi.map(article => {
@@ -23,6 +29,9 @@ async function loadRealNews() {
     renderTrending(window.allStories);
     renderTalkingAbout(window.allStories);
     renderFeed(window.allStories);
+
+    // Load shared community votes from Cloudflare D1
+    await loadAllCommunityVotes();
 
     console.log("Loaded stories from /api/news:", allArticles.length);
   } catch (error) {

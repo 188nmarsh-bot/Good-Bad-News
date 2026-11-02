@@ -235,48 +235,114 @@ function getStoryId(story) {
     .slice(0, 80);
 }
 
+/* COMMUNITY VOTING SYSTEM */
+
+const communityVoteCache = {};
+const pendingVotes = new Set();
+
+function getVoterId() {
+  let voterId = localStorage.getItem("goodbad-voter-id");
+
+  if (!voterId) {
+    voterId = crypto.randomUUID();
+    localStorage.setItem("goodbad-voter-id", voterId);
+  }
+
+  return voterId;
+}
+
 function getVotes(story) {
   const storyId = getStoryId(story);
-  const saved = localStorage.getItem(`votes-${storyId}`);
 
-  if (saved) return JSON.parse(saved);
-
-  return {
+  return communityVoteCache[storyId] || {
     good: 0,
     mixed: 0,
     bad: 0,
-    userVote: null
+    total: 0,
+    userVote: localStorage.getItem(`my-vote-${storyId}`),
+    loaded: false
   };
 }
 
-function saveVotes(story, votes) {
+async function loadCommunityVotes(story) {
   const storyId = getStoryId(story);
-  localStorage.setItem(`votes-${storyId}`, JSON.stringify(votes));
+
+  try {
+    const response = await fetch(
+      `/api/votes?storyId=${encodeURIComponent(storyId)}`,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) throw new Error("Unable to load votes");
+
+    const data = await response.json();
+
+    communityVoteCache[storyId] = {
+      good: Number(data.good) || 0,
+      mixed: Number(data.mixed) || 0,
+      bad: Number(data.bad) || 0,
+      total: Number(data.total) || 0,
+      userVote: localStorage.getItem(`my-vote-${storyId}`),
+      loaded: true
+    };
+
+    updateVoteDisplays();
+  } catch (error) {
+    console.error("Community vote loading failed:", error);
+  }
 }
 
-function voteStory(storyId, voteType) {
-  const story = window.allStories.find(s => getStoryId(s) === storyId);
-  if (!story) return;
+async function loadAllCommunityVotes() {
+  const stories = window.allStories || [];
 
-  const votes = getVotes(story);
+  await Promise.all(
+    stories.map(story => loadCommunityVotes(story))
+  );
+}
 
-  if (votes.userVote) {
-    votes[votes.userVote] = Math.max(0, votes[votes.userVote] - 1);
-  }
+async function voteStory(storyId, voteType) {
+  if (pendingVotes.has(storyId)) return;
 
-  votes[voteType] += 1;
-  votes.userVote = voteType;
+  const story = (window.allStories || []).find(
+    s => getStoryId(s) === storyId
+  );
 
-  saveVotes(story, votes);
+  if (!story || !["good", "mixed", "bad"].includes(voteType)) return;
 
-  renderTopStory(window.allStories);
-  renderTrending(window.allStories);
-  renderFeed(window.allStories);
+  pendingVotes.add(storyId);
 
-  const openVoteBox = document.getElementById("story-vote-box");
+  try {
+    const response = await fetch("/api/votes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        storyId,
+        voterId: getVoterId(),
+        voteType
+      })
+    });
 
-  if (openVoteBox) {
-    openVoteBox.innerHTML = renderVoteBox(story);
+    if (!response.ok) throw new Error("Vote could not be saved");
+
+    const data = await response.json();
+
+    localStorage.setItem(`my-vote-${storyId}`, voteType);
+
+    communityVoteCache[storyId] = {
+      good: Number(data.good) || 0,
+      mixed: Number(data.mixed) || 0,
+      bad: Number(data.bad) || 0,
+      total: Number(data.total) || 0,
+      userVote: voteType,
+      loaded: true
+    };
+
+    updateVoteDisplays();
+  } catch (error) {
+    console.error("Voting failed:", error);
+    alert("Your vote could not be saved. Please try again.");
+  } finally {
+    pendingVotes.delete(storyId);
   }
 }
 
@@ -327,13 +393,49 @@ function renderVoteBox(story) {
         <div class="vote-fill bad-fill" style="width:${percentages.bad}%"></div>
       </div>
 
+      <div class="vote-title" style="margin-top:10px;">
+        ${votes.loaded ? votes.total + " community votes" : "Loading votes..."}
+      </div>
+
       <div class="vote-buttons">
-        <button class="${votes.userVote === "good" ? "selected" : ""}" onclick="event.stopPropagation(); voteStory('${storyId}', 'good')">👍 Good</button>
-        <button class="${votes.userVote === "mixed" ? "selected" : ""}" onclick="event.stopPropagation(); voteStory('${storyId}', 'mixed')">😐 Mixed</button>
-        <button class="${votes.userVote === "bad" ? "selected" : ""}" onclick="event.stopPropagation(); voteStory('${storyId}', 'bad')">👎 Bad</button>
+        <button class="${votes.userVote === "good" ? "selected" : ""}"
+          onclick="event.stopPropagation(); voteStory('${storyId}', 'good')">
+          👍 Good
+        </button>
+
+        <button class="${votes.userVote === "mixed" ? "selected" : ""}"
+          onclick="event.stopPropagation(); voteStory('${storyId}', 'mixed')">
+          😐 Mixed
+        </button>
+
+        <button class="${votes.userVote === "bad" ? "selected" : ""}"
+          onclick="event.stopPropagation(); voteStory('${storyId}', 'bad')">
+          👎 Bad
+        </button>
       </div>
     </div>
   `;
+}
+
+function updateVoteDisplays() {
+  const stories = window.allStories || [];
+
+  if (typeof renderTopStory === "function") renderTopStory(stories);
+  if (typeof renderTrending === "function") renderTrending(stories);
+  if (typeof renderFeed === "function") renderFeed(stories);
+  if (typeof renderTalkingAbout === "function") renderTalkingAbout(stories);
+
+  if (typeof currentOpenStoryId !== "undefined" && currentOpenStoryId) {
+    const story = stories.find(
+      s => getStoryId(s) === currentOpenStoryId
+    );
+
+    const voteBox = document.getElementById("story-vote-box");
+
+    if (story && voteBox) {
+      voteBox.innerHTML = renderVoteBox(story);
+    }
+  }
 }
 
 function scrollTalking(direction) {
@@ -574,6 +676,8 @@ async function refreshNewsFeed() {
     renderTopStory(window.allStories);
     renderTrending(window.allStories);
     renderFeed(window.allStories);
+
+    await loadAllCommunityVotes();
 
     console.log("News feed refreshed.");
   } catch (error) {

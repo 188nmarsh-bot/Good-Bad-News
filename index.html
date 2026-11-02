@@ -750,6 +750,7 @@ header {
   };
 }
 
+
 function renderTalkingAbout(stories) {
   const container = document.getElementById("talkingAboutContainer");
   if (!container) return;
@@ -758,14 +759,9 @@ function renderTalkingAbout(stories) {
     .map(story => {
       const votes = getVotes(story);
 
-      const totalVotes =
-        votes.good +
-        votes.mixed +
-        votes.bad;
-
       return {
         ...story,
-        totalVotes
+        totalVotes: votes.good + votes.mixed + votes.bad
       };
     })
     .sort((a, b) => b.totalVotes - a.totalVotes)
@@ -774,14 +770,13 @@ function renderTalkingAbout(stories) {
   container.innerHTML = rankedStories
     .map(story => `
       <div class="talking-story-card"
-          onclick="openStoryById('${getStoryId(story)}')"
-        ${
-          story.image
-            ? `<img src="${story.image}"
-                   alt="${story.title}"
-                   class="talking-story-image">`
-            : ""
-        }
+           onclick="openStoryById('${getStoryId(story)}')">
+
+        ${story.image
+          ? `<img src="${story.image}"
+                  alt="${story.title}"
+                  class="talking-story-image">`
+          : ""}
 
         <div class="talking-story-content">
           <h3>${story.title}</h3>
@@ -792,39 +787,59 @@ function renderTalkingAbout(stories) {
     .join("");
 }
 
-  function renderTrending(list = getStoryList()) {
-    const container = document.getElementById("trending-container");
-    if (!container) return;
 
-    container.innerHTML = "";
+  
+function renderTrending(list = getStoryList()) {
+  const container = document.getElementById("trending-container");
+  if (!container) return;
 
-    if (!list || list.length === 0) {
-      container.innerHTML = "<p style='color:white;'>No trending stories available.</p>";
-      return;
+  container.innerHTML = "";
+
+  if (!list || list.length === 0) {
+    container.innerHTML = "<p style='color:white;'>No trending stories available.</p>";
+    return;
+  }
+
+  const sorted = [...list]
+    .sort((a, b) => scoreStory(b) - scoreStory(a))
+    .slice(1, 4);
+
+  sorted.forEach(story => {
+    const growthLabel = getGrowthLabel(story);
+    const votes = getVotes(story);
+
+    let communityLabel = "Awaiting Votes";
+    let badgeClass = "";
+
+    if (votes.total > 0 && votes.loaded) {
+      if (votes.good > votes.bad && votes.good > votes.mixed) {
+        communityLabel = "Good";
+        badgeClass = "good";
+      } else if (votes.bad > votes.good && votes.bad > votes.mixed) {
+        communityLabel = "Bad";
+        badgeClass = "bad";
+      } else {
+        communityLabel = "Mixed";
+      }
     }
 
-    const sorted = [...list]
-      .sort((a, b) => scoreStory(b) - scoreStory(a))
-      .slice(1, 4);
+    const card = document.createElement("div");
+    card.className = "trend-card";
 
-    sorted.forEach((story) => {
-      const growthLabel = getGrowthLabel(story);
-      const card = document.createElement("div");
-      card.className = "trend-card";
-
-      card.addEventListener("click", function () {
-        openStory(story);
-      });
-
-      card.innerHTML = `
-        <div class="badge ${story.label === "Good" ? "good" : "bad"}">${story.label}</div>
-        <h3>${story.title}</h3>
-        <small>${growthLabel} • ${story.sources.length} sources</small>
-      `;
-
-      container.appendChild(card);
+    card.addEventListener("click", function () {
+      openStory(story);
     });
-  }
+
+    card.innerHTML = `
+      <div class="badge ${badgeClass}">${communityLabel}</div>
+      <h3>${story.title}</h3>
+      <small>${growthLabel} • ${story.sources.length} sources</small>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
 
   function renderFeed(list = getStoryList()) {
     const container = document.getElementById("feed-container");
@@ -1015,17 +1030,33 @@ function openStory(story) {
     }
   }
 
-  function filterBy(label, btn) {
-    setActive(btn);
+ 
+function filterBy(label, btn) {
+  setActive(btn);
 
-    const filtered = getStoryList().filter(
-      (story) => story.label === label
-    );
+  const filtered = getStoryList().filter(story => {
+    const votes = getVotes(story);
 
-    renderTopStory(filtered);
-    renderTrending(filtered);
-    renderFeed(filtered);
-  }
+    // Only classify stories with community votes
+    if (!votes.loaded || votes.total === 0) return false;
+
+    if (label === "Good") {
+      return votes.good > votes.bad && votes.good > votes.mixed;
+    }
+
+    if (label === "Bad") {
+      return votes.bad > votes.good && votes.bad > votes.mixed;
+    }
+
+    return false;
+  });
+
+  renderTopStory(filtered);
+  renderTrending(filtered);
+  renderTalkingAbout(filtered);
+  renderFeed(filtered);
+}
+
 
   function filterByCategory(category, btn) {
     setActive(btn);
